@@ -510,15 +510,25 @@ trait ASTExtractors {
     }
 
     object ExForallExpression {
-      def unapply(tree: Apply) : Option[(List[(Tree, Symbol)], Tree)] = tree match {
+      def unapply(tree: Apply) : Option[Tree] = tree match {
         case a @ Apply(
             TypeApply(s @ ExSymbol("leon", "lang", "forall"), types),
-            Function(vds, predicateBody) :: Nil) =>
-          Some(((types zip vds.map(_.symbol)), predicateBody))
+            Seq(pred)
+        ) =>
+          Some(pred)
         case _ => None
       }
     }
 
+    object ExExistsExpression {
+      def unapply(tree: Apply) : Option[Tree] = tree match {
+        case a @ Apply(
+        TypeApply(s @ ExSymbol("leon", "lang", "exists"), types),
+        Seq(pred)) =>
+          Some(pred)
+        case _ => None
+      }
+    }
     object ExArrayUpdated {
       def unapply(tree: Apply): Option[(Tree,Tree,Tree)] = tree match {
         case Apply(

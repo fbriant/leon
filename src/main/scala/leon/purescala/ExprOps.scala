@@ -271,9 +271,6 @@ object ExprOps {
     v2
   }
 
-  
-  
-  
   ///*
   // * Turn a total function returning Option[A] into a partial function
   // * returning A.
@@ -293,6 +290,8 @@ object ExprOps {
   //    res.isDefined
   //  }
   //}
+
+
 
   /**
    * Auxiliary API
@@ -340,10 +339,10 @@ object ExprOps {
 
 
   def replaceFromIDs(substs: Map[Identifier, Expr], expr: Expr) : Expr = {
-    postMap({
+    postMap {
       case Variable(i) => substs.get(i)
       case _ => None
-    })(expr)
+    }(expr)
   }
 
   def variablesOf(expr: Expr): Set[Identifier] = {
@@ -358,7 +357,6 @@ object ExprOps {
           case MatchExpr(_, cses) => subvs -- cses.map(_.pattern.binders).foldLeft(Set[Identifier]())((a, b) => a ++ b)
           case Passes(_, _ , cses)   => subvs -- cses.map(_.pattern.binders).foldLeft(Set[Identifier]())((a, b) => a ++ b)
           case Lambda(args, body) => subvs -- args.map(_.id)
-          case Forall(args, body) => subvs -- args.map(_.id)
           case _ => subvs
         }
     }(expr)

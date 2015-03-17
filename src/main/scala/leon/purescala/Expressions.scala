@@ -114,8 +114,19 @@ object Expressions {
     val getType = FunctionType(args.map(_.getType), body.getType).unveilUntyped
   }
 
-  case class Forall(args: Seq[ValDef], body: Expr) extends Expr {
-    require(body.getType == BooleanType)
+  case class Forall(body: Expr) extends Expr {
+    require(body.getType match {
+      case FunctionType(_, BooleanType) => true
+      case _ => false
+    })
+    val getType = BooleanType
+  }
+
+  case class Exists(body: Expr) extends Expr {
+    require(body.getType match {
+      case FunctionType(_, BooleanType) => true
+      case _ => false
+    })
     val getType = BooleanType
   }
 

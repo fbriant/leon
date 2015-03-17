@@ -51,6 +51,13 @@ class ScalaPrinter(opts: PrinterOptions, sb: StringBuffer = new StringBuffer) ex
       case SetCardinality(s)    => p"$s.size"
       case InfiniteIntegerLiteral(v)        => p"BigInt($v)"
 
+      // @mk FIXME: This is not always correct. E.g. what if we are in a class which defines forall?
+        // The printer needs
+      case Forall(pred) =>
+        p"forall($pred)"
+      case Exists(pred) =>
+        p"exists($pred)"
+
       case a@FiniteArray(elems, oDef, size) => {
         import ExprOps._
         val ArrayType(underlying) = a.getType

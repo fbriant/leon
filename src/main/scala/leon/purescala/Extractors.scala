@@ -28,7 +28,8 @@ object Extractors {
       case TupleSelect(t, i) => Some((t, tupleSelect(_, i, t.getType.asInstanceOf[TupleType].dimension)))
       case ArrayLength(a) => Some((a, ArrayLength))
       case Lambda(args, body) => Some((body, Lambda(args, _)))
-      case Forall(args, body) => Some((body, Forall(args, _)))
+      case Forall(pred) => Some((pred, Forall))
+      case Exists(pred) => Some((pred, Exists))
       case (ue: UnaryExtractable) => ue.extract
       case _ => None
     }

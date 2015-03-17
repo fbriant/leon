@@ -12,8 +12,6 @@ import purescala.Types._
 import purescala.Definitions._
 import purescala.Constructors._
 
-import evaluators._
-
 class TemplateGenerator[T](val encoder: TemplateEncoder[T]) {
   private var cache     = Map[TypedFunDef, FunctionTemplate[T]]()
   private var cacheExpr = Map[Expr, FunctionTemplate[T]]()

@@ -478,6 +478,30 @@ abstract class SMTLIBSolver(val context: LeonContext,
 
   /* Translate a Leon Expr to an SMTLIB term */
 
+
+
+  private def quantifiedToSMT(e: Expr, quantifier: (SortedVar, Seq[SortedVar], Term) => Term)
+                             (implicit bindings: Map[Identifier, Term]) : Term = {
+    def forceLambda(e: Expr): Lambda = e match {
+      case l : Lambda => l
+      case _ =>
+        val FunctionType(from, _) = e.getType
+        val vds = from map (tpe => ValDef(FreshIdentifier("x", tpe, true)))
+        Lambda(vds, application(e, vds map { _.toVariable}))
+    }
+
+    val Lambda(vars, body) = forceLambda(e)
+    val (ids, smtVars, newBs) = vars.map { vd =>
+      val id = vd.id
+      val sym = id2sym(id)
+      (id, SortedVar(sym, declareSort(vd.getType)), symbolToQualifiedId(sym))
+    }.unzip3
+
+    val newBindings = ids.zip(newBs).toMap
+    val smtBody = toSMT(body)(bindings ++ newBindings)
+    quantifier(smtVars.head, smtVars.tail, smtBody)
+  }
+
   protected def toSMT(e: Expr)(implicit bindings: Map[Identifier, Term]): Term = {
     e match {
       case Variable(id) =>
@@ -503,6 +527,12 @@ abstract class SMTLIBSolver(val context: LeonContext,
           Seq(),
           newBody
         )
+
+      case Exists(e) =>
+        quantifiedToSMT(e, SMTExists)
+
+      case Forall(e) =>
+        quantifiedToSMT(e, SMTForall)
 
       case er @ Error(tpe, _) =>
         declareVariable(FreshIdentifier("error_value", tpe))
@@ -624,7 +654,6 @@ abstract class SMTLIBSolver(val context: LeonContext,
        */
       case ap @ Application(caller, args) =>
         ArraysEx.Select(toSMT(caller), toSMT(tupleWrap(args)))
-
       case Not(u) => Core.Not(toSMT(u))
       case UMinus(u) => Ints.Neg(toSMT(u))
       case BVUMinus(u) => FixedSizeBitVectors.Neg(toSMT(u))
@@ -873,6 +902,7 @@ abstract class SMTLIBSolver(val context: LeonContext,
           (id, fromSMT(value, id.getType)(Map(), Map()))
       }.toMap
     }
+
   }
 
   override def push(): Unit = {

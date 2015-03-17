@@ -9,7 +9,7 @@ import Definitions.{Program, TypedFunDef}
 import Constructors.{application, implies}
 import DefOps.typedTransitiveCallees
 import smtlib.parser.Commands.{Assert => SMTAssert, _}
-import smtlib.parser.Terms._
+import smtlib.parser.Terms.{ Exists => SMTExists, _ }
 import smtlib.theories.Core.Equals
 
 // This solver utilizes the define-funs-rec command of SMTLIB-2.5 to define mutually recursive functions.
@@ -113,7 +113,7 @@ abstract class SMTLIBCVC4QuantifiedSolver(context: LeonContext, program: Program
   // For this solver, we prefer the variables of assert() commands to be exist. quantified instead of free
   override def assertCnstr(expr: Expr) =
     try {
-      sendCommand(SMTAssert(quantifiedTerm(Exists, expr)))
+      sendCommand(SMTAssert(quantifiedTerm(SMTExists, expr)))
     } catch {
       case _ : IllegalArgumentException =>
         addError()

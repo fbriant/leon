@@ -207,6 +207,17 @@ class PrettyPrinter(opts: PrinterOptions, val sb: StringBuffer = new StringBuffe
         p"""|assert($const)
             |$body"""
 
+      // We specialize a little
+      case Forall(Lambda(vars, body)) =>
+        p"∀$vars. $body"
+      case Forall(pred) =>
+        p"∀$pred"
+
+      case Exists(Lambda(vars, body)) =>
+        p"∃$vars. $body"
+      case Exists(pred) =>
+        p"∃$pred"
+
       case Ensuring(body, post) =>
         p"""|{
             |  $body

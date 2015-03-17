@@ -35,4 +35,24 @@ package object lang {
       try { tests(in) == out } catch { case _ : MatchError => true }
   }
 
+  @ignore
+  def forall[A](pred: A => Boolean): Boolean = ???
+  @ignore
+  def forall[A,B](pred: (A,B) => Boolean): Boolean = ???
+  @ignore
+  def forall[A,B,C](pred: (A,B,C) => Boolean): Boolean = ???
+  @ignore
+  def forall[A,B,C,D](pred: (A,B,C,D) => Boolean): Boolean = ???
+  @ignore
+  def forall[A,B,C,D,E](pred: (A,B,C,D,E) => Boolean): Boolean = ???
+  @ignore
+  def exists[A](pred: A => Boolean): Boolean = ???
+  @ignore
+  def exists[A,B](pred: (A,B) => Boolean): Boolean = ???
+  @ignore
+  def exists[A,B,C](pred: (A,B,C) => Boolean): Boolean = ???
+  @ignore
+  def exists[A,B,C,D](pred: (A,B,C,D) => Boolean): Boolean = ???
+  @ignore
+  def exists[A,B,C,D,E](pred: (A,B,C,D,E) => Boolean): Boolean = ???
 }
