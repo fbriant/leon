@@ -209,14 +209,14 @@ class PrettyPrinter(opts: PrinterOptions, val sb: StringBuffer = new StringBuffe
 
       // We specialize a little
       case Forall(Lambda(vars, body)) =>
-        p"∀$vars. $body"
+        p"(∀$vars. $body)"
       case Forall(pred) =>
-        p"∀$pred"
+        p"(∀$pred)"
 
       case Exists(Lambda(vars, body)) =>
-        p"∃$vars. $body"
+        p"(∃$vars. $body)"
       case Exists(pred) =>
-        p"∃$pred"
+        p"(∃$pred)"
 
       case Ensuring(body, post) =>
         p"""|{
@@ -747,8 +747,10 @@ class PrettyPrinter(opts: PrinterOptions, val sb: StringBuffer = new StringBuffe
 
   def precedence(ex: Expr): Int = ex match {
     case (pa: PrettyPrintable) => pa.printPrecedence
+    case (_: Forall | _: Exists) => -1
     case (_: ElementOfSet) => 0
-    case (_: Or | BinaryMethodCall(_, "||", _)) => 1
+    case (_: Implies) => 1
+    case (_: Or | BinaryMethodCall(_, "||", _)) => 2
     case (_: And | BinaryMethodCall(_, "&&", _)) => 3
     case (_: GreaterThan | _: GreaterEquals  | _: LessEquals | _: LessThan) => 4
     case (_: Equals | _: Not) => 5
