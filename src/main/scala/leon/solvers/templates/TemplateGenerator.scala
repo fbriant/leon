@@ -247,6 +247,13 @@ class TemplateGenerator[T](val encoder: TemplateEncoder[T]) {
           storeGuarded(pathVar, application(cond, Seq(Variable(cid))))
           Variable(cid)
 
+        // The Lambdas within Forall, Exists should not be changed
+        case Forall(Lambda(args, body)) =>
+          Forall(Lambda(args, rec(pathVar, body)))
+
+        case Exists(Lambda(args, body)) =>
+          Exists(Lambda(args, rec(pathVar, body)))
+
         case l @ Lambda(args, body) =>
           val idArgs : Seq[Identifier] = lambdaArgs(l)
           val trArgs : Seq[T] = idArgs.map(encoder.encodeId)
